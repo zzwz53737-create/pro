@@ -1,0 +1,54 @@
+name: FINAL UserBot
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "2 */6 * * *"
+
+jobs:
+  run-bot:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Restore latest files
+        uses: actions/cache@v3
+        with:
+          path: |
+            *.db
+            *.json
+            *.txt
+            *.png
+            *.jpg
+            *.jpeg
+          key: latest-bot-files
+
+      - name: Install dependencies
+        run: |
+          if [ -f requirements.txt ]; then
+            pip install -r requirements.txt
+          fi
+
+      - name: Run bot
+        run: |
+          python main.py
+
+      - name: Save latest files
+        if: always()
+        uses: actions/cache@v3
+        with:
+          path: |
+            *.db
+            *.json
+            *.txt
+            *.png
+            *.jpg
+            *.jpeg
+          key: latest-bot-files
