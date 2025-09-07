@@ -123,7 +123,8 @@ def initialize_db():
             user_id INTEGER PRIMARY KEY,
             bot_status BOOLEAN,
             stopped_chats TEXT,
-            trigger_name TEXT
+            trigger_name TEXT,
+            api_key TEXT
         )
     ''')
     cursor.execute('''
@@ -627,33 +628,35 @@ def save_hunting_status(user_id, status_data):
 def get_ai_settings(user_id):
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute('SELECT bot_status, stopped_chats, trigger_name FROM user_ai_settings WHERE user_id = ?', (user_id,))
+    cursor.execute('SELECT bot_status, stopped_chats, trigger_name, api_key FROM user_ai_settings WHERE user_id = ?', (user_id,))
     row = cursor.fetchone()
     conn.close()
     if row:
         return {
             "bot_status": bool(row['bot_status']),
             "stopped_chats": set(json.loads(row['stopped_chats'])) if row['stopped_chats'] else set(),
-            "trigger_name": row['trigger_name']
+            "trigger_name": row['trigger_name'],
+            "api_key": row['api_key']
         }
     else:
         return {
             "bot_status": False,
             "stopped_chats": set(),
-            "trigger_name": None
+            "trigger_name": None,
+            "api_key": None
         }
 
 def save_ai_settings(user_id, settings):
     conn = get_db_connection()
     cursor = conn.cursor()
     bot_status = settings.get("bot_status", False)
-    # Convert set to list for JSON serialization
     stopped_chats = json.dumps(list(settings.get("stopped_chats", set())))
     trigger_name = settings.get("trigger_name")
+    api_key = settings.get("api_key")
     cursor.execute('''
-        INSERT OR REPLACE INTO user_ai_settings (user_id, bot_status, stopped_chats, trigger_name)
-        VALUES (?, ?, ?, ?)
-    ''', (user_id, bot_status, stopped_chats, trigger_name))
+        INSERT OR REPLACE INTO user_ai_settings (user_id, bot_status, stopped_chats, trigger_name, api_key)
+        VALUES (?, ?, ?, ?, ?)
+    ''', (user_id, bot_status, stopped_chats, trigger_name, api_key))
     conn.commit()
     conn.close()
 
