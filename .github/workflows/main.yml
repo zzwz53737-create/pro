@@ -1,5 +1,5 @@
 name: FINAL UserBot
-
+#لا احلل ابدا نسخ الملف بدون ذكر حقوقي.وساكون خصيمك يوم الدين 
 on:
   workflow_dispatch:
   schedule:
