@@ -1,9 +1,9 @@
-name: FINAL UserBot
-#لا احلل ابدا نسخ الملف بدون ذكر حقوقي.وساكون خصيمك يوم الدين 
+name: FINAL UserBot 
+#لا احلل ابدا نسخ الملف بدون ذكر المصدر وساكون خصيمك يوم الدين 
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 */6 * * *"   
+    - cron: "0 */6 * * *" 
 
 concurrency:
   group: final-userbot
@@ -50,6 +50,11 @@ jobs:
           if [ -f requirements.txt ]; then
             pip install -r requirements.txt
           fi
+
+      - name: Install FFmpeg & FFprobe
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
 
       - name: Run bot
         run: python main.py
